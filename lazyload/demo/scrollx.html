@@ -1,0 +1,91 @@
+
+  
+    <!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://g.tbcdn.cn/kissy/k/1.4.4/seed.js" data-config="{combine:true}"></script>		
+	</head>
+	<body>	
+		<h3>Lazy load demo, scroll x</h3>		
+		<div id="floor1" class="floor">
+			<img src="img/dot.gif" data-ks-lazyload="img/fj.png">
+			<textarea class="cls-ks-lazyload">
+				<div class="bg">
+					content 1
+				</div>
+				<script>
+					alert('load floor 1');
+					//console.log('Load 1');
+				</script>
+			</textarea>
+		</div>
+
+		<div id="floor2" class="floor">
+			<img src="img/dot.gif" data-ks-lazyload="img/fj.png">
+			<textarea class="cls-ks-lazyload">
+				<div class="bg">
+					content 2
+				</div>
+				<script>
+					alert('load floor 2');
+					//console.log('Load 2');
+				</script>
+			</textarea>
+		</div>		
+
+		<div id="floor3" class="floor">
+			<img src="img/dot.gif" data-ks-lazyload="img/fj.png">
+			<textarea class="cls-ks-lazyload">
+				<div class="bg">
+					content 3
+				</div>
+				<script>
+					alert('load floor 3');
+					//console.log('Load 3');
+				</script>
+			</textarea>
+		</div>				
+
+
+		<style>
+			.bg {
+				background: #666;
+			}
+
+			.floor {
+				display: inline-block;
+				height: 300px;
+				width: 1500px;
+				margin-right: 300px;
+			}
+
+			body {
+				width: 10000px;
+			}
+		</style>
+
+		<script>
+			KISSY.config({
+				packages: {
+					'my': {
+						combine: false,
+						debug: true,
+						ignorePackageNameInUri:true,
+						base: './../'
+					}
+				}
+			});
+
+			KISSY.use('my/lazyload', function(S, Lazyload) {
+				var lazyLoad = new Lazyload(document, {
+					scrollX: true,
+					callback: [
+						{ele: '#floor1', fn: function(){ alert('callback 1'); } },
+						{ele: '#floor2', fn: function(){ alert('callback 2'); } }
+					]
+				});
+			});
+		</script>
+	</body>
+</html>
+  

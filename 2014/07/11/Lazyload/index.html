@@ -1,0 +1,370 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Lazy load/懒加载/延迟加载 | Runtang&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="runtang">
+    
+    <meta name="description" content="前端中的懒加载，就是当用户浏览网页时，往下拖动滚动条到达固定位置时才进行某些元素（如图片）的加载，或者触发某些回调事件。使用懒加载可以减少用户打开页面时的延迟、节省流量等，对于图片资源特多的各大电商的主页大部分都使用了这种方式进行优化，如天猫，京东等。
+进行懒加载的元素一般有三类：
+
+图片
+复杂的d">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Runtang&#39;s Blog" title="Runtang&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Runtang&#39;s Blog">Runtang&#39;s Blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:runtang.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/07/11/Lazyload/" title="Lazy load/懒加载/延迟加载" itemprop="url">Lazy load/懒加载/延迟加载</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://runtang.github.io" title="runtang">runtang</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-07-11T07:07:57.000Z" itemprop="datePublished">Jul 11 2014</time>
+    Updated:<time datetime="2014-07-14T09:25:08.000Z" itemprop="dateModified">Jul 14 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#进行懒加载的元素一般有三类："><span class="toc-number">1.</span> <span class="toc-text">进行懒加载的元素一般有三类：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对图片元素，常用有两种方法："><span class="toc-number">2.</span> <span class="toc-text">对图片元素，常用有两种方法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对复杂的dom元素的处理："><span class="toc-number">3.</span> <span class="toc-text">对复杂的dom元素的处理：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#回调函数的处理方法："><span class="toc-number">4.</span> <span class="toc-text">回调函数的处理方法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#懒加载触发的实现机制，一般有两种方法："><span class="toc-number">5.</span> <span class="toc-text">懒加载触发的实现机制，一般有两种方法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考别人的实现"><span class="toc-number">6.</span> <span class="toc-text">参考别人的实现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#一些问题"><span class="toc-number">7.</span> <span class="toc-text">一些问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#自己的实现"><span class="toc-number">8.</span> <span class="toc-text">自己的实现</span></a></li></ol>
+		</div>
+		
+		<p>前端中的懒加载，就是当用户浏览网页时，往下拖动滚动条到达固定位置时才进行某些元素（如图片）的加载，或者触发某些回调事件。使用懒加载可以减少用户打开页面时的延迟、节省流量等，对于图片资源特多的各大电商的主页大部分都使用了这种方式进行优化，如天猫，京东等。</p>
+<h4 id="进行懒加载的元素一般有三类：">进行懒加载的元素一般有三类：</h4>
+<ul>
+<li>图片</li>
+<li>复杂的dom元素</li>
+<li>回调函数（如 <a href="http://veromoda.tmall.com/" target="_blank" rel="external">http://veromoda.tmall.com/</a>，浏览器往下滚动时，才发出ajax请求加载数据）</li>
+</ul>
+<h4 id="对图片元素，常用有两种方法：">对图片元素，常用有两种方法：</h4>
+<p><strong>方法1</strong></p>
+<ul>
+<li>正常使用 img 标签，并指定其 src 属性，即 <code>&lt;img src=&quot;a.jpg&quot; /&gt;</code>；</li>
+<li>执行懒加载模块时，把图片的加载abort掉，再把 src 属性指定的的真实图片地址保存在 img 元素的自定义属性中，如 lazy-src，该自定义属性也起到了标识懒元素的作用，并把img元素src的值替换成一个占位图片/或删除src属性/或设置为src=“”，即 <code>&lt;img src=&quot;placeholder.jpg&quot; lazy-src=“a.jpg” /&gt;</code> 或 <code>&lt;img lazy-src=“a.jpg” /&gt;</code> 或 <code>&lt;img src=&quot;&quot; lazy-src=“a.jpg”&gt;</code> ；</li>
+<li>在触发懒加载时，从 lazy-src 属性取出 img 元素的真实图片地址，设置到 src 属性上，即 <code>&lt;img src=“a.jpg” /&gt;</code>。</li>
+</ul>
+<p><strong>方法2</strong></p>
+<ul>
+<li>在开发时就把图片的真实地址存放在 img 元素的自定义属性中，img 元素的 src 属性存放的是占位图片，即<code>&lt;img src=&quot;placeholder.jpg&quot; lazy-src=“a.jpg” /&gt;</code>；</li>
+<li>在懒加载触发时才把img元素的src替换成真实的图片地址，即 <code>&lt;img src=“a.jpg” /&gt;</code>。</li>
+</ul>
+<p><strong>对比</strong><br>两种方法的主要区别是在开发时是否直接把图片的地址直接设置到 img 标签的 src 属性上。而方法1则需要进行对 src 属性的处理，并且不同的处理方法（把 img 元素 src 的值替换成一个占位图片/或删除该属性/或设置为src=“”）存在一些问题：</p>
+<ul>
+<li>在IE下，执行懒加载脚本时，可能已经有图片与服务器建立链接了，此时 abort 真实图片加载，到后续懒加载时再重新加载反而增加负荷</li>
+<li>在chrome和safari下，由于webkit内核bug，导致无法abort掉图片的下载</li>
+<li>如果给img的src设为空字符串，可能会得到意料之外的结果</li>
+</ul>
+<p>这些bug参考：<a href="http://www.cnblogs.com/cloudgamer/archive/2010/03/03/ImagesLazyLoad.html" target="_blank" rel="external">http://www.cnblogs.com/cloudgamer/archive/2010/03/03/ImagesLazyLoad.html</a></p>
+<h4 id="对复杂的dom元素的处理：">对复杂的dom元素的处理：</h4>
+<ul>
+<li>整个dom元素使用 textarea 标签进行包裹，这样浏览器就不会把该dom元素当成正常的html元素进行渲染了（内部的 script 标签也不会执行）；同时，该 textarea 标签需用一个特殊的class或自定义属性进行标识，表明其是懒加载元素；</li>
+<li>当懒加载的条件触发时，把该 textarea 的 value 取出来（就是懒加载的dom元素），使用一个 div 标签进行包裹，插入到 textarea 之前进行渲染，而 textarea 可以隐藏/或删除；</li>
+</ul>
+<h4 id="回调函数的处理方法：">回调函数的处理方法：</h4>
+<p>需要绑定一个触发该回调函数执行的元素，当该元素的懒加载条件触发时，才执行特定的函数：<code>fn.call(el);</code>，例如，<a href="http://veromoda.tmall.com/" target="_blank" rel="external">http://veromoda.tmall.com/</a> 就使用了这种做法，当往下滚动时，用firebug查看到其发出ajax请求。</p>
+<h4 id="懒加载触发的实现机制，一般有两种方法：">懒加载触发的实现机制，一般有两种方法：</h4>
+<ol>
+<li><p>在document加载后，遍历document，记录所有懒元素，并记录懒元素相对与浏览器顶部的位置；<br>当浏览器进行scroll或resize时，循环判断这些懒元素是否出现在视口中，并进行懒元素加载。</p>
+</li>
+<li><p>在document加载后，遍历document，记录所有懒元素；<br>当浏览器进行scroll或resize时，计算所有懒元素相对于浏览器顶部的位置，循环判断这些懒元素是否出现在视口中，并加载；</p>
+</li>
+</ol>
+<p><strong>对比</strong></p>
+<ul>
+<li><p>方法1：在scroll和resize时无需重新计算懒元素的位置，并且还可以根据元素的位置进行排序，减少遍历复杂度；<br>  但如果元素的位置出现变化了（例如页面的广告收起了），加载也就不准确了。</p>
+</li>
+<li><p>方法2：可以适应元素的位置可能发生变化的情况，但每次scroll和resize时需要重新计算元素的位置，而这个过程会引起页面的reflow，因此js执行时间也会增多。</p>
+</li>
+</ul>
+<h4 id="参考别人的实现">参考别人的实现</h4>
+<ul>
+<li><p><a href="http://blog.csdn.net/huli870715/article/details/8126519" target="_blank" rel="external">http://blog.csdn.net/huli870715/article/details/8126519</a><br>原理：页面初次加载时获取图片在页面中的位置并缓存，计算出可视区域；当图片的位置出现在可视区域中，将src的值替换成真实的地址，此时图片就开始加载了。当页面滚动的时候，再判断图片已经缓存的位置值是否出现在可视区域内，进行替换src加载。当所有的图片都加载完之后，将相应的触发事件卸载，避免重复操作引起的内存泄漏。</p>
+</li>
+<li><p><a href="http://stylechen.com/imglazyload2.html" target="_blank" rel="external">http://stylechen.com/imglazyload2.html</a><br>原理：实现和上面的方法类似，先把元素距离顶部的位置计算并保存，然后在页面滚动时根据视口大小、滚动的距离和元素距离顶部的位置进行元素加载。</p>
+</li>
+<li><p><a href="http://gallery.kissyui.com/datalazyload/1.1/guide/index.html" target="_blank" rel="external">http://gallery.kissyui.com/datalazyload/1.1/guide/index.html</a><br>原理：可指定多个容器，并对容器内部的img、带有lazyload的textarea进行遍历；当页面往下滚动（scroll或resize）时，分别计算img、textarea、需要执行回调函数的元素这三类元素距离浏览器顶部的位置，并判断是否即将出现在视口中，然后进行加载。</p>
+</li>
+<li><p><a href="http://gallery.kissyui.com/lazyload/1.0/guide/index.html" target="_blank" rel="external">http://gallery.kissyui.com/lazyload/1.0/guide/index.html</a><br>原理：指定单个元素做为懒加载的元素（若需要指定多个container则需要多个lazyload的实例），同样的获取容器内部的需要懒加载的img和textarea，当浏览器scrooll或resize时，重新懒元素的位置，并判断懒元素是否出现在容器的可视区域中（分成了容器是document或普通元素两种情况进行讨论），进行加载。</p>
+</li>
+</ul>
+<h4 id="一些问题">一些问题</h4>
+<ul>
+<li><p>懒加载容器<br>大部分的实现都默认懒加载元素的容器是document，或指定一个普通元素做为容器，并对window的scroll和resize进行监听，使用window的滚动和宽高等属性判断懒加载元素是否应该加载。<br>但考虑这样一种情况，懒加载元素被一个可scroll的容器包裹，并通过在容器scroll使懒加载元素出现在视口中，仅仅通过对window的监听是无法捕获到这种变化。而 <a href="http://gallery.kissyui.com/lazyload/1.0/guide/index.html" target="_blank">这个实现</a> 就提供了对普通容器的监听，以及相对于普通容器（而非widnwow）的懒元素是否需要加载的计算。<br>在考虑一种特别变态的情况，如果懒元素的祖先是多个可以scroll的容器，那么要真正计算出懒元素是否出现在视口中就很麻烦了（懒元素的位置在视口中，并且懒元素没有因为scroll被其父级元素所遮挡）。<br>所以，大部分的实现还是基于现实最常用的情况考虑，以window的各项值做为判断一个懒元素是否出现在视口中的标准。</p>
+</li>
+<li><p>display：none；<br>是否能够对懒元素设置display：none，或者对懒元素的父元素设置display：none？<br>首先，我使用的是kissy，并使用 width() 和 height() 函数获取元素的宽高，使用 offset() 函数获取元素的 top 和 left （当前元素相对于浏览器左上角的位置）；</p>
+<ol>
+<li>对 img 和 textarea 元素本身设置display: none，那么元素通过 width 和 height 函数获得的宽度和高度会是元素可见时的宽度和高度，而用 offset 函数得到的 top 和 left 值则会跟 window 的 scrollTop和 scrollLeft 值相同，导致这些元素会在打开页面时马上被加载。</li>
+<li>对 img 和 textarea 元素的父元素设置display: none，那么 img 元素通过 width 和 height 函数获得的宽度和高度都会是，textarea 元素的宽高会是-4；而用 offset 函数得到的 top 和 left 值则会跟 window 的 scrollTop和 scrollLeft 值相同，导致这些元素也会在打开页面时马上被加载。这种情况下，对这些懒元素使用 css(‘display’) 获得其计算值，会是该元素原本的display值，不会因为父元素的设置而变成none。</li>
+</ol>
+<p>所以，可以用了这样的判断，排除这些被隐藏的懒元素，这种方式对tab的懒加载也会起有用：<br><code>if ($ele.css(&#39;display&#39;) == &#39;none&#39; || $ele.width() &lt;= 0)</code></p>
+</li>
+</ul>
+<h4 id="自己的实现">自己的实现</h4>
+<p>我在实现上参考了 <a href="http://gallery.kissyui.com/datalazyload/1.1/guide/index.html" target="_blank" rel="external">http://gallery.kissyui.com/datalazyload/1.1/guide/index.html</a> 和 <a href="http://gallery.kissyui.com/lazyload/1.0/guide/index.html，具体代码见：https://github.com/runtang/lazyload/" target="_blank" rel="external">http://gallery.kissyui.com/lazyload/1.0/guide/index.html，具体代码见：https://github.com/runtang/lazyload/</a></p>
+<p>demo: </p>
+<ul>
+<li><a href="/lazyload/demo/default.html" target="_blank">默认配置</a></li>
+<li><a href="/lazyload/demo/config.html" target="_blank">带配置参数的调用</a>  </li>
+<li><a href="/lazyload/demo/mutilcontainers.html" target="_blank">多个container</a>          </li>
+<li><a href="/lazyload/demo/scrollx.html" target="_blank">水平scroll懒加载</a></li>
+<li><a href="/lazyload/demo/callbackfn.html" target="_blank">回调函数</a></li>
+</ul>
+<p>一些特性：</p>
+<ul>
+<li>支持指定多个容器；</li>
+<li>监听window的scroll和resize事件触发懒加载，且可设置为垂直或水平scroll；</li>
+<li>写代码时需要把 img 懒元素的图片真实地址存放到自定义属性中，其src属性可以存放一个1px的替代图片；</li>
+<li>每次window的scroll和resize触发时，重新计算各懒元素的 top 和 left；</li>
+</ul>
+<p>这是师兄交代的一个任务，由于之前加班于实验室的工作，最近几天才算是勉强完成了一个初级版本，实在惭愧。<br>第一次写博客，深知自身巭孬，努力中，求指导…</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://runtang.github.io/2014/07/11/Lazyload/" data-title="Lazy load/懒加载/延迟加载 | Runtang&#39;s Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/07/11/hello-world/"  title="Hello World">
+ <strong>NEXT:</strong><br/> 
+ <span>Hello World
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#进行懒加载的元素一般有三类："><span class="toc-number">1.</span> <span class="toc-text">进行懒加载的元素一般有三类：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对图片元素，常用有两种方法："><span class="toc-number">2.</span> <span class="toc-text">对图片元素，常用有两种方法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对复杂的dom元素的处理："><span class="toc-number">3.</span> <span class="toc-text">对复杂的dom元素的处理：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#回调函数的处理方法："><span class="toc-number">4.</span> <span class="toc-text">回调函数的处理方法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#懒加载触发的实现机制，一般有两种方法："><span class="toc-number">5.</span> <span class="toc-text">懒加载触发的实现机制，一般有两种方法：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#参考别人的实现"><span class="toc-number">6.</span> <span class="toc-text">参考别人的实现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#一些问题"><span class="toc-number">7.</span> <span class="toc-text">一些问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#自己的实现"><span class="toc-number">8.</span> <span class="toc-text">自己的实现</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://runtang.github.io" target="_blank" title="runtang">runtang</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>
